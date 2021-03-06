@@ -34,24 +34,33 @@ namespace ConsoleUI
 
         private static void ProductTest() //kodu metodun içine koyduk
         {
-            ProductManager productManager = new ProductManager(new EfProductDal());//inmemory çalışıcam demek.
-                                                                                   // İNMEMORY KISMIDNAKİ VERİLERİ ÇAĞIRDIK.VERİTABANI OLMADIĞI İÇİN BELLEKTEKİLERİ ÇAĞIRDIK.
-            foreach (var product in productManager.GetProductDetails())//min 50 max 100 ürünleri getir.
+            ProductManager productManager = new ProductManager(new EfProductDal());
+            var result = productManager.GetProductDetails();
+            if (result.Success==true) //eğer başarılıysa foreachle resultın datasını gez
             {
-                Console.WriteLine(product.ProductName+"/"+product.CategoryName);
+                foreach (var product in result.Data) 
+                    Console.WriteLine(product.ProductName+"/"+product.CategoryName);
+                
+            }
+            else //değilse
+            {
+                Console.WriteLine(result.Message);
+            }
+            //foreach (var product in productManager.GetProductDetails().Data)
+            //    Console.WriteLine(product.ProductName+"/"+product.CategoryName);
             }
         }
     }
     //private static void ProductTest() //kodu metodun içine koyduk
     //{
-    //    ProductManager productManager = new ProductManager(new EfProductDal());//inmemory çalışıcam demek.
-    //                                                                           // İNMEMORY KISMIDNAKİ VERİLERİ ÇAĞIRDIK.VERİTABANI OLMADIĞI İÇİN BELLEKTEKİLERİ ÇAĞIRDIK.
+    //    ProductManager productManager = new ProductManager(new EfProductDal());//entityframework çalışıcam demek.
+    //     // entityframwork KISMIDNAKİ VERİLERİ ÇAĞIRDIK.
     //    foreach (var product in productManager.GetByUnitPrice(50, 100))//min 50 max 100 ürünleri getir.
     //    {
     //        Console.WriteLine(product.ProductName);
     //    }
     //}
-}
+
 
      
     

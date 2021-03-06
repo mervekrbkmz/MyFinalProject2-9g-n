@@ -24,7 +24,7 @@ namespace Business.Concrete
             //businnes kodlar.kurallar varsa kodları buraya yazarız geçerliyse ekleriz değilse eklenmez.
 
             //false kısmı//hata sonucu.
-            if (product.ProductName.Length<2) //üürünün ismi minimum 2 karakter olmalı.
+            if (product.ProductName.Length < 2) //üürünün ismi minimum 2 karakter olmalı.
             {
                 //MAGİC STRİNGS:STRİNGLERİ AYRI AYRI YAZMAK.
                 return new ErrorResult(Messages.ProductAdded);
@@ -37,41 +37,52 @@ namespace Business.Concrete
             return new SuccessResult("Ürün Eklendi");
         }
 
-        public IDataResult<List<Product>>GetAll()
+        public IDataResult<List<Product>> GetAll()
         {
             //22:00dan 22:59 kadar bakımda olucak.
-            if (DateTime.Now.Hour==22)
+            if (DateTime.Now.Hour == 22)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);//MaintenanceTime:bakım zamanı.
             }
             //işkodları varsa
             //işşleri geçerse veri erişimi çağırmmaız lazım
             //iş sınıfları başka sınıfları newlemez.
-            return new SuccessDataResult<List<Product>>( _productDal.GetAll(),true,"ürünler listelendi");//kurallardan geçtim bana ürünleri ver demek.
-            //return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed);//dataresult için
+            //return new SuccessDataResult<List<Product>>( _productDal.GetAll(),true,"ürünler listelendi");//kurallardan geçtim bana ürünleri ver demek.
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed);//dataresult için
 
         }
 
         public IDataResult<List<Product>> GetAllByCategoryId(int id)
         {
-            return _productDal.GetAll(p => p.CategoryId == id);//ctegoryıd benim gönderdiğim id ye eşitse onları filtrele demek.
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));//ctegoryıd benim gönderdiğim id ye eşitse onları filtrele demek.
         }
 
         public IDataResult<Product> GetById(int productId)
         {
-            return _productDal.Get(p => p.ProductId == productId);//tek bir ürün döndüreceği için get dedik.
+            return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));//tek bir ürün döndüreceği için get dedik.
         }
 
-        public List<Product> GetByUnitPrice(decimal min, decimal max)
+        public IDataResult<List<Product>> GetByUnitPrice(decimal min, decimal max)
         {
 
-            return _productDal.GetAll(p => p.UnitPrice >= min&& p.UnitPrice<=max);//2 fiyata aralığındakileri getir.
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));//2 fiyata aralığındakileri getir.
         }
 
-        public List<ProductDetailDto> GetProductDetails()
+        public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
-            return _productDal.GetProductDetails();
+            return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
 
         }
+        //SİSTEM BAKIMDA DİCEK.
+        //    public IDataResult<List<ProductDetailDto>> GetProductDetails()
+        //    {
+        //        if (DateTime.Now.Hour == 23)
+        //        {
+        //            return new ErrorDataResult<List<ProductDetailDto>>(Messages.MaintenanceTime);//MaintenanceTime:bakım zamanı.
+        //        }
+        //        return new ErrorDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
+
+        //    }
+        //}
     }
-}
+} }
