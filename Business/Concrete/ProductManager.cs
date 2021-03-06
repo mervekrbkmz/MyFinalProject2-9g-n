@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.Constants;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -25,7 +26,8 @@ namespace Business.Concrete
             //false kısmı//hata sonucu.
             if (product.ProductName.Length<2) //üürünün ismi minimum 2 karakter olmalı.
             {
-                return new ErrorResult("Ürün ismi min 2 karakter olmalıdır.");
+                //MAGİC STRİNGS:STRİNGLERİ AYRI AYRI YAZMAK.
+                return new ErrorResult(Messages.ProductAdded);
             }
 
 
@@ -35,21 +37,27 @@ namespace Business.Concrete
             return new SuccessResult("Ürün Eklendi");
         }
 
-        public List<Product> GetAll()
+        public IDataResult<List<Product>>GetAll()
         {
+            //22:00dan 22:59 kadar bakımda olucak.
+            if (DateTime.Now.Hour==22)
+            {
+                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);//MaintenanceTime:bakım zamanı.
+            }
             //işkodları varsa
             //işşleri geçerse veri erişimi çağırmmaız lazım
             //iş sınıfları başka sınıfları newlemez.
-            return _productDal.GetAll();//kurallardan geçtim bana ürünleri ver demek.
- 
+            return new SuccessDataResult<List<Product>>( _productDal.GetAll(),true,"ürünler listelendi");//kurallardan geçtim bana ürünleri ver demek.
+            //return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed);//dataresult için
+
         }
 
-        public List<Product> GetAllByCategoryId(int id)
+        public IDataResult<List<Product>> GetAllByCategoryId(int id)
         {
             return _productDal.GetAll(p => p.CategoryId == id);//ctegoryıd benim gönderdiğim id ye eşitse onları filtrele demek.
         }
 
-        public Product GetById(int productId)
+        public IDataResult<Product> GetById(int productId)
         {
             return _productDal.Get(p => p.ProductId == productId);//tek bir ürün döndüreceği için get dedik.
         }
